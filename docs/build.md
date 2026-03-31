@@ -5,23 +5,15 @@ Os binários são gerados com [PyInstaller](https://pyinstaller.org/) a partir d
 ## Pré-requisitos
 
 - Python ≥ 3.12
-- [uv](https://docs.astral.sh/uv/) **ou** ambiente virtual com `pip`
+- [uv](https://docs.astral.sh/uv/) (recomendado) ou `pip`
 
 ## Build local — Linux
 
-No diretório do repositório.
-
-**Com uv:**
+No diretório do repositório:
 
 ```bash
 uv sync --extra dev
 uv run pyinstaller tic-tac-toe-client.spec
-```
-
-**Com Python standalone** (`venv` ativo e `pip install -e ".[dev]"` já executado):
-
-```bash
-pyinstaller tic-tac-toe-client.spec
 ```
 
 O executável fica em `dist/tic-tac-toe-client`. Para distribuir:
@@ -33,19 +25,11 @@ tar czvf tic-tac-toe-client-linux-x64.tar.gz -C dist tic-tac-toe-client
 
 ## Build local — Windows
 
-Na pasta do projeto.
-
-**Com uv:**
+No PowerShell ou CMD, na pasta do projeto:
 
 ```powershell
 uv sync --extra dev
 uv run pyinstaller tic-tac-toe-client.spec
-```
-
-**Com Python standalone** (`.venv` ativo, dependências dev instaladas):
-
-```powershell
-pyinstaller tic-tac-toe-client.spec
 ```
 
 O executável fica em `dist\tic-tac-toe-client.exe`. Opcionalmente compacte em ZIP para envio.
