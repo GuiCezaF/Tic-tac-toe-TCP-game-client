@@ -1,0 +1,87 @@
+# Gera binários PyInstaller (Linux + Windows) e anexa ao release publicado.
+# Uso: GitHub → Releases → Create a new release → Publish release.
+
+name: Release binaries
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build (Linux x64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Dependências e PyInstaller
+        run: uv sync --extra dev
+
+      - name: PyInstaller
+        run: uv run pyinstaller tic-tac-toe-client.spec
+
+      - name: Arquivo para distribuição (.tar.gz)
+        run: |
+          chmod +x dist/tic-tac-toe-client
+          tar czvf tic-tac-toe-client-linux-x64.tar.gz -C dist tic-tac-toe-client
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-tarball
+          path: tic-tac-toe-client-linux-x64.tar.gz
+
+  build-windows:
+    name: Build (Windows x64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Dependências e PyInstaller
+        run: uv sync --extra dev
+
+      - name: PyInstaller
+        run: uv run pyinstaller tic-tac-toe-client.spec
+
+      - name: Arquivo para distribuição (.zip)
+        shell: pwsh
+        run: |
+          Compress-Archive -Force `
+            -Path dist/tic-tac-toe-client.exe `
+            -DestinationPath tic-tac-toe-client-windows-x64.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-zip
+          path: tic-tac-toe-client-windows-x64.zip
+
+  attach-to-release:
+    name: Anexar ao release
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Enviar assets ao release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: |
+            artifacts/linux-tarball/tic-tac-toe-client-linux-x64.tar.gz
+            artifacts/windows-zip/tic-tac-toe-client-windows-x64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tic-ta-toe-client"
+version = "0.1.0"
+description = "Cliente Pygame (TCP/NDJSON) para jogo da velha em rede"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.12"
+dependencies = ["pygame>=2.5"]
+
+[project.optional-dependencies]
+dev = ["pyinstaller>=6.0"]
+
+[project.scripts]
+tic-tac-toe-client = "tic_tac_toe_client.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tic_tac_toe_client"]
